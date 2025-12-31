@@ -35,7 +35,7 @@ void bvh_render_node(U32 node_id);
 
 void bvh_render();
 
-void bvh_handle_manifolds();
+void bvh_calculate_manifolds();
 
 struct PsxRay;
 struct PsxRayResult;

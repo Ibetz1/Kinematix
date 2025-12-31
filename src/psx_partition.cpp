@@ -157,7 +157,7 @@ void bvh_render() {
     #endif
 }
 
-void bvh_handle_manifolds() {
+void bvh_calculate_manifolds() {
     if (g_bvh_root == NO_INSTANCE) {
         return;
     }

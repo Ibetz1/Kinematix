@@ -11,8 +11,8 @@ void physics_step(F32 dt) {
     spacial_integrate_positions(dt);
     collider_filter_updated();
     collider_build_bvh();
-    bvh_handle_manifolds();
-    manifolds_solve_vel_pos(dt);
+    bvh_calculate_manifolds();
+    manifolds_solve(dt);
 
 }
 

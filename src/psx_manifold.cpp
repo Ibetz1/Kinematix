@@ -186,7 +186,7 @@ void manifold_solve(const PsxManifold& m, F32 dt) {
     }
 }
 
-void manifolds_solve_vel_pos(F32 dt) {
+void manifolds_solve(F32 dt) {
     for (Inst i = 0; i < g_next_manifold; ++i) {
         PsxManifold& m = g_manifolds[i];
         if (!m.in_use) continue;

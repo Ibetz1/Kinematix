@@ -44,7 +44,7 @@ Inst manifold_new(
 
 void manifold_solve(const PsxManifold& m, F32 dt);
 
-void manifolds_solve_vel_pos(F32 dt);
+void manifolds_solve(F32 dt);
 
 bool manifold_get_colliding(Inst manifold);
 
