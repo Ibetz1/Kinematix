@@ -81,6 +81,7 @@ Inst collider_new_circle(F32 radius, PsxColliderConfig cfg) {
     collider.shape = SHAPE_CIRCLE;
     collider.circ.radius = radius;
     collider.spacial = cfg.spacial;
+    collider.material = cfg.material;
     collider.offset = cfg.offset;
     collider.user_data = cfg.user_data;
 
@@ -95,6 +96,7 @@ Inst collider_new_poly(GlxPolygon identity, F32 scale, PsxColliderConfig cfg) {
     // base collider
     collider.shape = SHAPE_POLY;
     collider.spacial = cfg.spacial;
+    collider.material = cfg.material;
     collider.offset = cfg.offset;
     collider.user_data = cfg.user_data;
 

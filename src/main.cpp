@@ -30,16 +30,12 @@ int main() {
 
     Inst player = spacial_new({
         .pos = {0, 0},
-        .flags = SPACIAL_FLAG_RIGID | SPACIAL_FLAG_NO_GRAV,
+        .flags = SPACIAL_FLAG_RIGID,
         .layer = 0,
     });
-        collider_new_rect({32, 50}, {.spacial = player });
-        collider_new_poly(
-            shape_identity_octogon,
-            12.f,
+        collider_new_rect({32, 50}, 
             {
-                .spacial = player,
-                .offset = {0, 25},
+                .spacial = player 
             }
         );
 
@@ -49,9 +45,33 @@ int main() {
         .group = 1
     });
 
-    collider_new_rect({1000, 100}, { .spacial = world_spacial});
-    collider_new_rect({100, 1000}, { .spacial = world_spacial, .offset = { 500, -500} });
-    collider_new_rect({100, 1000}, { .spacial = world_spacial, .offset = {-500, -500} });
+    Inst world_material = material_new({
+        .friction = 0.f,
+        .restitution = 1.f,
+    });
+
+    collider_new_rect({1000, 100}, 
+        { 
+            .spacial = world_spacial,
+            .material = world_material,
+        }
+    );
+
+    collider_new_rect({100, 1000}, 
+        { 
+            .spacial = world_spacial, 
+            .material = world_material,
+            .offset = { 500, -500},
+        }
+    );
+
+    collider_new_rect({100, 1000}, 
+        { 
+            .spacial = world_spacial, 
+            .material = world_material,
+            .offset = {-500, -500},
+        }
+    );
 
     Inst loc = spacial_new({
         .pos = {0, 0},
@@ -116,7 +136,7 @@ int main() {
         PsxRay ray = {
             .origin = spacial_get_pos(player),
             .dir = vec2_normal({0, 1}),
-            .max_dist = 100.f,
+            .max_dist = 30.f,
             .group = 1
         };
 
@@ -127,7 +147,7 @@ int main() {
             dist = hit.dist;
         }
 
-        if (kb_state[SDL_SCANCODE_SPACE] && hit.touched) { spacial_impulse(player, {0, -3200 * dt}); }
+        if (kb_state[SDL_SCANCODE_SPACE] && hit.touched) { spacial_impulse(player, {0, -20000 * dt}); }
 
         /*
             render pass

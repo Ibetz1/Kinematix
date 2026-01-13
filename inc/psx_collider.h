@@ -52,6 +52,7 @@ struct PsxCollider {
     Vec2 offset;
 
     Inst spacial;       // reference to spacial object
+    Inst material;      // reference to collider material
     U32 id;             // index of collider in g_colliders
     U32 phase;          // current phase of collision
 

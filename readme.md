@@ -1,5 +1,10 @@
 Kinematix - A Box2D Clone
 
+Build Project
+```
+g++ src/*.cpp src/libs/glad/*.c -Iinc -Isrc/libs -I. -lSDL2 -lopengl32
+```
+
 Required loop functions
 ```c++
 void phy_step(F32 dt) {

@@ -5,6 +5,7 @@
 #include "vector.h"
 #include "config.h"
 #include "psx_collider.h"
+#include "psx_material.h"
 #include "psx_algo.h"
 
 #define MM_MAX_CONTACT_PTS 2

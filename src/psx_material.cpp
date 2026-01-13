@@ -6,6 +6,9 @@ static U32 g_materials_free_top = 0;
 static U32 g_next_material = 0;
 
 PsxMaterial g_default_material = {
+    .friction = 0.f,
+    .restitution = 0.f,
+
     .id = NO_INSTANCE,
     .in_use = true,
     .user_data = nullptr
@@ -70,5 +73,16 @@ void material_free(Inst material) {
 Inst material_new(PsxMaterialConfig config) {
     PsxMaterial& material = material_alloc();
 
+    material.friction = config.friction;
+    material.restitution = config.restitution;
+
     return material.id;
 };
+
+F32 material_get_friction(Inst material) {
+    return (material == NO_INSTANCE) ? g_default_material.friction : material_get(material).friction;
+}
+
+F32 material_get_restitution(Inst material) {
+    return (material == NO_INSTANCE) ? g_default_material.restitution : material_get(material).restitution;
+}

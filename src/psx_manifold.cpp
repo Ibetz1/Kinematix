@@ -103,18 +103,28 @@ void manifold_solve(const PsxManifold& m, F32 dt) {
     if (a_static && b_static) return;
 
     // mass
-    F32 inv_mass_a = A.inv_mass;
-    F32 inv_mass_b = B.inv_mass;
+    F32 inv_mass_a = a_static ? 0.f : A.inv_mass;
+    F32 inv_mass_b = b_static ? 0.f : B.inv_mass;
+
+    // interia
+    F32 inv_i_a    = a_static ? 0.f : A.inv_inertia;
+    F32 inv_i_b    = b_static ? 0.f : B.inv_inertia;
+
     F32 inv_mass_sum = inv_mass_a + inv_mass_b;
     if (inv_mass_sum <= 0.f) return;
 
-    // intertia
-    F32 inv_i_a = A.inv_inertia;
-    F32 inv_i_b = B.inv_inertia;
-
     // material properties
-    const F32 restitution = 0.0f; // no bounce
-    const F32 friction = 0.4f;  // medium friction
+    F32 restitution = f32_clamp(
+        fmaxf(
+            material_get_restitution(colA.material), 
+            material_get_restitution(colB.material)
+        ), 
+        0.f, 1.f);
+
+    F32 friction = sqrtf(
+        material_get_friction(colA.material) *  
+        material_get_friction(colB.material)
+    );
 
     Vec2 normal = m.normal;   // unit collision normal
     Vec2 contact = m.contact; // contact point
@@ -143,30 +153,31 @@ void manifold_solve(const PsxManifold& m, F32 dt) {
 
     // normal impulse
     F32 max_friction;
-    {
+    do {
         F32 vel_norm = vec2_dot(rv, normal);
-        if (vel_norm > 0.f) return; // separating
+        if (vel_norm > 0.f) continue; // separating
 
         F32 rn_a = vec2_cross(ra, normal);
         F32 rn_b = vec2_cross(rb, normal);
 
         F32 denom_norm = inv_mass_a + inv_mass_b + rn_a * rn_a * inv_i_a + rn_b * rn_b * inv_i_b;
-        if (denom_norm < 0.0005) return; // will yeet shit into andromeda without this
+        if (denom_norm < 0.0005) continue; // will yeet shit into andromeda without this
         
         F32 j = -(1.f + restitution) * vel_norm / denom_norm;
         max_friction = j * friction; // max friction is relative to normal
         Vec2 impulse_norm = normal * j;
 
+        printf("bounce %.4f %.4f\n", vel_norm, denom_norm);
         if (!a_static) spacial_impulse(A, -impulse_norm, contact);
         if (!b_static) spacial_impulse(B,  impulse_norm, contact);
-    }
+    } while(0);
 
 
-    // --- friction impulse
-    {
+    // friction impulse
+    do {
         Vec2 tangent = rv - normal * vec2_dot(rv, normal);
         F32 tlen = vec2_length(tangent);
-        if (tlen < 0.0005) return;
+        if (tlen < 0.0005) continue;;
         tangent /= tlen;
 
         F32 vel_tan = vec2_dot(rv, tangent);
@@ -174,7 +185,7 @@ void manifold_solve(const PsxManifold& m, F32 dt) {
         F32 rt_b = vec2_cross(rb, tangent);
 
         F32 denom_tan = inv_mass_a + inv_mass_b + rt_a * rt_a * inv_i_a + rt_b * rt_b * inv_i_b;
-        if (denom_tan < 0.0005) return; // will yeet shit onto kepler-B without this
+        if (denom_tan < 0.0005) continue;; // will yeet shit onto kepler-B without this
 
         F32 jt = -vel_tan / denom_tan;
         jt = f32_clamp(jt, -max_friction, +max_friction);
@@ -183,7 +194,7 @@ void manifold_solve(const PsxManifold& m, F32 dt) {
 
         if (!a_static) spacial_impulse(A, -impulse_tan, contact);
         if (!b_static) spacial_impulse(B,  impulse_tan, contact);
-    }
+    } while(0);
 }
 
 void manifolds_solve(F32 dt) {
