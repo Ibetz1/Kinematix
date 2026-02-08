@@ -116,35 +116,16 @@ void spacial_accellarate(PsxSpacial& s, Vec2 force) {
 
 void spacial_impulse(PsxSpacial& s, Vec2 impulse) {
     if (s.flags & SPACIAL_FLAG_STATIC) return;
-
-    s.vel += impulse * s.inv_mass;
-}
-
-
-void spacial_impulse(PsxSpacial& s, Vec2 impulse, Vec2 contact_point_world) {
-    if (s.flags & SPACIAL_FLAG_STATIC) return;
-    if (s.inv_mass == 0.f && s.inv_inertia == 0.f) return;
+    if (s.inv_mass <= 0.f && s.inv_inertia == 0.f) return;
 
     // linear part
-    if (s.inv_mass > 0.f) {
-        s.vel += impulse * s.inv_mass;
-    }
-
-    if (!(s.flags & SPACIAL_FLAG_RIGID)) return; // dont do rigid body stuff
-
-    // angular part
-    if (s.inv_inertia > 0.f) {
-        Vec2 r = contact_point_world - s.pos;  // COM -> contact
-        F32 tau = vec2_cross(r, impulse);
-        s.ang_vel += tau * s.inv_inertia;
-    }
+    s.vel += impulse * s.inv_mass;
 }
 
 void spacial_integrate_velocities(F32 dt) {
     for (int i = 0; i < g_next_spacial; ++i) {
         PsxSpacial& s = spacial_get(i);
         if (!s.in_use) continue;
-
         if (s.flags & SPACIAL_FLAG_STATIC) continue;
 
         if (s.inv_mass == 0.f) {
@@ -181,9 +162,7 @@ void spacial_integrate_positions(F32 dt) {
     for (int i = 0; i < g_next_spacial; ++i) {
         PsxSpacial& s = spacial_get(i);
         if (!s.in_use) continue;
-
         if (s.flags & SPACIAL_FLAG_STATIC) continue;
-
         if (s.inv_mass == 0.f) continue;
 
         // Save previous position before integrating

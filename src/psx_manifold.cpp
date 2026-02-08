@@ -152,49 +152,52 @@ void manifold_solve(const PsxManifold& m, F32 dt) {
     Vec2 rv = vel_b - vel_a; // relative velocity
 
     // normal impulse
-    F32 max_friction;
+    F32 max_friction{};
     do {
         F32 vel_norm = vec2_dot(rv, normal);
         if (vel_norm > 0.f) continue; // separating
+        F32 denom_lin = inv_mass_a + inv_mass_b;
+        F32 j = -(1.f + restitution) * vel_norm / denom_lin;
+        Vec2 P = normal * j;
 
-        F32 rn_a = vec2_cross(ra, normal);
-        F32 rn_b = vec2_cross(rb, normal);
+        // F32 rn_a = vec2_cross(ra, normal);
+        // F32 rn_b = vec2_cross(rb, normal);
 
-        F32 denom_norm = inv_mass_a + inv_mass_b + rn_a * rn_a * inv_i_a + rn_b * rn_b * inv_i_b;
-        if (denom_norm < 0.0005) continue; // will yeet shit into andromeda without this
+        // F32 denom_norm = inv_mass_a + inv_mass_b + rn_a * rn_a * inv_i_a + rn_b * rn_b * inv_i_b;
+        // if (denom_norm < 0.0005) continue; // will yeet shit into andromeda without this
         
-        F32 j = -(1.f + restitution) * vel_norm / denom_norm;
-        max_friction = j * friction; // max friction is relative to normal
-        Vec2 impulse_norm = normal * j;
+        // F32 j = -(1.f + restitution) * vel_norm / denom_norm;
+        // max_friction = j * friction; // max friction is relative to normal
+        // Vec2 impulse_norm = normal * j;
 
-        printf("bounce %.4f %.4f\n", vel_norm, denom_norm);
-        if (!a_static) spacial_impulse(A, -impulse_norm, contact);
-        if (!b_static) spacial_impulse(B,  impulse_norm, contact);
+        // printf("bounce %.4f %.4f\n", vel_norm, denom_norm);
+        spacial_impulse(A, -P);
+        spacial_impulse(B,  P);
     } while(0);
 
 
-    // friction impulse
-    do {
-        Vec2 tangent = rv - normal * vec2_dot(rv, normal);
-        F32 tlen = vec2_length(tangent);
-        if (tlen < 0.0005) continue;;
-        tangent /= tlen;
+    // // friction impulse
+    // do {
+    //     Vec2 tangent = rv - normal * vec2_dot(rv, normal);
+    //     F32 tlen = vec2_length(tangent);
+    //     if (tlen < 0.0005) continue;;
+    //     tangent /= tlen;
 
-        F32 vel_tan = vec2_dot(rv, tangent);
-        F32 rt_a = vec2_cross(ra, tangent);
-        F32 rt_b = vec2_cross(rb, tangent);
+    //     F32 vel_tan = vec2_dot(rv, tangent);
+    //     F32 rt_a = vec2_cross(ra, tangent);
+    //     F32 rt_b = vec2_cross(rb, tangent);
 
-        F32 denom_tan = inv_mass_a + inv_mass_b + rt_a * rt_a * inv_i_a + rt_b * rt_b * inv_i_b;
-        if (denom_tan < 0.0005) continue;; // will yeet shit onto kepler-B without this
+    //     F32 denom_tan = inv_mass_a + inv_mass_b + rt_a * rt_a * inv_i_a + rt_b * rt_b * inv_i_b;
+    //     if (denom_tan < 0.0005) continue;; // will yeet shit onto kepler-B without this
 
-        F32 jt = -vel_tan / denom_tan;
-        jt = f32_clamp(jt, -max_friction, +max_friction);
+    //     F32 jt = -vel_tan / denom_tan;
+    //     jt = f32_clamp(jt, -max_friction, +max_friction);
 
-        Vec2 impulse_tan = tangent * jt;
+    //     Vec2 impulse_tan = tangent * jt;
 
-        if (!a_static) spacial_impulse(A, -impulse_tan, contact);
-        if (!b_static) spacial_impulse(B,  impulse_tan, contact);
-    } while(0);
+    //     if (!a_static) spacial_impulse(A, -impulse_tan, contact);
+    //     if (!b_static) spacial_impulse(B,  impulse_tan, contact);
+    // } while(0);
 }
 
 void manifolds_solve(F32 dt) {

@@ -28,6 +28,11 @@ int main() {
     Uint32 last_ticks = SDL_GetTicks();
     F32 dt = 1.f;
 
+    Inst world_material = material_new({
+        .friction = 0.f,
+        .restitution = 1.f,
+    });
+
     Inst player = spacial_new({
         .pos = {0, 0},
         .flags = SPACIAL_FLAG_RIGID,
@@ -35,7 +40,20 @@ int main() {
     });
         collider_new_rect({32, 50}, 
             {
-                .spacial = player 
+                .spacial = player,
+                .material = world_material,
+            }
+        );
+
+    Inst test = spacial_new({
+        .pos = {-100, 0},
+        .flags = SPACIAL_FLAG_RIGID,
+        .layer = 0,
+    });
+        collider_new_rect({32, 50}, 
+            {
+                .spacial = test,
+                .material = world_material,
             }
         );
 
@@ -43,11 +61,6 @@ int main() {
         .pos = {0, 500},
         .flags = SPACIAL_FLAG_STATIC,
         .group = 1
-    });
-
-    Inst world_material = material_new({
-        .friction = 0.f,
-        .restitution = 1.f,
     });
 
     collider_new_rect({1000, 100}, 
@@ -121,10 +134,10 @@ int main() {
         constexpr float speed = 500.f;
 
         Vec2 impulse = { 0 };
-        if (kb_state[SDL_SCANCODE_W]) { impulse.y -= 1.f; }
-        if (kb_state[SDL_SCANCODE_S]) { impulse.y += 1.f; }
-        if (kb_state[SDL_SCANCODE_A]) { impulse.x -= 1.f; }
-        if (kb_state[SDL_SCANCODE_D]) { impulse.x += 1.f; }
+        if (kb_state[SDL_SCANCODE_W]) { impulse.y -= 100000.f; }
+        if (kb_state[SDL_SCANCODE_S]) { impulse.y += 50.f; }
+        if (kb_state[SDL_SCANCODE_A]) { impulse.x -= 50.f; }
+        if (kb_state[SDL_SCANCODE_D]) { impulse.x += 50.f; }
 
         impulse = vec2_normal(impulse);
         impulse *= speed;
@@ -147,7 +160,7 @@ int main() {
             dist = hit.dist;
         }
 
-        if (kb_state[SDL_SCANCODE_SPACE] && hit.touched) { spacial_impulse(player, {0, -20000 * dt}); }
+        if (kb_state[SDL_SCANCODE_SPACE]) { spacial_impulse(player, {0, -5000 * dt}); }
 
         /*
             render pass

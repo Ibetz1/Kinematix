@@ -47,6 +47,7 @@ inline Vec2 operator/(Vec2 a, Vec2 b) { return { a.x / b.x, a.y / b.y }; }
 
 inline Vec2 vec2_perp(const Vec2& a) { return { -a.y, a.x }; }
 inline F32 vec2_dot(const Vec2& a, const Vec2& b) { return a.x * b.x + a.y * b.y; }
+inline Vec2 vec2_abs(const Vec2& a) { return { fabsf(a.x), fabsf(a.y) }; }
 inline F32 vec2_cross(const Vec2& a, const Vec2& b) { return a.x * b.y - b.x * a.y; }
 inline Vec2 vec2_cross(F32 w, const Vec2& r) { return { -w * r.y, w * r.x }; }
 inline F32 vec2_length(const Vec2& v) { return sqrtf(vec2_dot(v, v)); }

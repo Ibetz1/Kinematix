@@ -82,7 +82,7 @@ void spacial_accellarate(PsxSpacial& spacial, Vec2 impulse);
 
 void spacial_impulse(Inst spacial, Vec2 impulse);
 void spacial_impulse(PsxSpacial& spacial, Vec2 impulse);
-void spacial_impulse(PsxSpacial& s, Vec2 impulse, Vec2 contact_point_world);
+void spacial_impulse(PsxSpacial& s, Vec2 impulse);
 
 /*
     getters
